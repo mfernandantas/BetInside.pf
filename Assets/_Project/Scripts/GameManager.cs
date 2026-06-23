@@ -92,10 +92,26 @@ public class GameManager : MonoBehaviour
             // Limita as barras entre 0 e 100 para não estourarem o visual
             LimitarValores();
             AtualizarInterface();
+
+            // VERIFICAÇÃO DE SALDO ZERADO APÓS O GIRO
+            if (saldo <= 0)
+            {
+                saldo = 0;
+                AtualizarInterface();
+                FinalizarSimulacao();
+            }
         }
         else
         {
-            textoMensagem.text = "AVISO: Saldo insuficiente ou aposta inválida. Na vida real, o esgotamento de recursos gera crises de ansiedade severas.";
+            // Se o saldo já estiver zerado ou insuficiente antes de tentar girar, finaliza
+            if (saldo <= 0)
+            {
+                FinalizarSimulacao();
+            }
+            else
+            {
+                textoMensagem.text = "AVISO: Saldo insuficiente ou aposta inválida. Na vida real, o esgotamento de recursos gera crises de ansiedade severas.";
+            }
         }
     }
 
@@ -107,7 +123,7 @@ public class GameManager : MonoBehaviour
         }
 
         valorAposta *= 2;
-        inputValorAposta.text = valorAposta.ToString();
+        if (inputValorAposta != null) inputValorAposta.text = valorAposta.ToString();
 
         // Dobrar aposta afeta o psicológico imediatamente
         dopamina += 5;
@@ -124,7 +140,7 @@ public class GameManager : MonoBehaviour
     public void AumentarAposta()
     {
         valorAposta += 5f;
-        inputValorAposta.text = valorAposta.ToString();
+        if (inputValorAposta != null) inputValorAposta.text = valorAposta.ToString();
     }
 
     public void DiminuirAposta()
@@ -132,7 +148,7 @@ public class GameManager : MonoBehaviour
         if (valorAposta > 5f)
         {
             valorAposta -= 5f;
-            inputValorAposta.text = valorAposta.ToString();
+            if (inputValorAposta != null) inputValorAposta.text = valorAposta.ToString();
         }
     }
 
@@ -154,13 +170,34 @@ public class GameManager : MonoBehaviour
     void AtualizarInterface()
     {
         // Atualiza os sliders na tela (dividido por 100 porque o slider vai de 0 a 1)
-        if(sliderDopamina) sliderDopamina.value = dopamina / 100f;
-        if(sliderSanidade) sliderSanidade.value = sanidade / 100f;
-        if(sliderControle) sliderControle.value = controle / 100f;
-        if(sliderFissura) sliderFissura.value = fissura / 100f;
-        if(sliderPercepcao) sliderPercepcao.value = percepcao / 100f;
-        if(sliderAtencao) sliderAtencao.value = atencao / 100f;
+        if (sliderDopamina) sliderDopamina.value = dopamina / 100f;
+        if (sliderSanidade) sliderSanidade.value = sanidade / 100f;
+        if (sliderControle) sliderControle.value = controle / 100f;
+        if (sliderFissura) sliderFissura.value = fissura / 100f;
+        if (sliderPercepcao) sliderPercepcao.value = percepcao / 100f;
+        if (sliderAtencao) sliderAtencao.value = atencao / 100f;
 
-        if(textoSaldo) textoSaldo.text = "SALDO: R$ " + saldo.ToString("F2");
+        if (textoSaldo) textoSaldo.text = "SALDO: R$ " + saldo.ToString("F2");
+    }
+
+    public void FinalizarSimulacao()
+    {
+        // Salva com segurança todos os valores finais para o relatório educativo da Tela Final
+        PlayerPrefs.SetFloat("SaldoFinal", saldo);
+        PlayerPrefs.SetFloat("DopaminaFinal", dopamina);
+        PlayerPrefs.SetFloat("SanidadeFinal", sanidade);
+        PlayerPrefs.SetFloat("ControleFinal", controle);
+        PlayerPrefs.SetFloat("FissuraFinal", fissura);
+        PlayerPrefs.SetFloat("PercepcaoFinal", percepcao);
+        PlayerPrefs.SetFloat("AtencaoFinal", atencao);
+        
+        // Mantém registro do perfil utilizado
+        string perfilAtual = PlayerPrefs.GetString("PerfilUsuario", "Jovem");
+        PlayerPrefs.SetString("PerfilUsado", perfilAtual);
+        
+        PlayerPrefs.Save(); // Força a gravação física dos dados
+
+        // Redireciona para o Diagnóstico de fim de jogo
+        SceneManager.LoadScene("Scene_Final");
     }
 }
