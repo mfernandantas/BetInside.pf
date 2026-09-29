@@ -14,6 +14,9 @@ public class GameManager : MonoBehaviour
     public Slider sliderPercepcao;
     public Slider sliderAtencao;
 
+    [Header("Animacao das Barras")]
+    [SerializeField] private float velocidadeBarras = 0.30f;
+
     [Header("Textos e Inputs")]
     public TMP_Text textoSaldo;
     public TMP_Text textoMensagem;
@@ -30,18 +33,27 @@ public class GameManager : MonoBehaviour
     [Header("Botao Girar")]
     public Button botaoGirar;
 
-    // Variáveis de controle
+    // Controle do jogo
     private float saldo = 100f;
     private float valorAposta = 10f;
     private bool girando = false;
 
-    // Valores iniciais
+    // Valores dos medidores
     private float dopamina = 50f;
     private float sanidade = 70f;
     private float controle = 50f;
     private float fissura = 30f;
     private float percepcao = 80f;
     private float atencao = 100f;
+
+    // Valores visuais das barras
+    // Eles se aproximam lentamente dos valores reais
+    private float visualDopamina;
+    private float visualSanidade;
+    private float visualControle;
+    private float visualFissura;
+    private float visualPercepcao;
+    private float visualAtencao;
 
     void Start()
     {
@@ -50,7 +62,17 @@ public class GameManager : MonoBehaviour
             inputValorAposta.text = valorAposta.ToString();
         }
 
-        AtualizarInterface();
+        // Começa com os valores corretos,
+        // sem animação ao abrir a cena
+        visualDopamina = dopamina;
+        visualSanidade = sanidade;
+        visualControle = controle;
+        visualFissura = fissura;
+        visualPercepcao = percepcao;
+        visualAtencao = atencao;
+
+        AtualizarBarrasImediatamente();
+        AtualizarSaldo();
 
         if (textoMensagem != null)
         {
@@ -59,13 +81,105 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        AnimarBarras();
+    }
+
+    // =====================================================
+    // ANIMAÇÃO SUAVE DAS BARRAS
+    // =====================================================
+
+    void AnimarBarras()
+    {
+        // Converte a velocidade para a escala 0-100
+        float passo = velocidadeBarras * 100f * Time.deltaTime;
+
+        visualDopamina = Mathf.MoveTowards(
+            visualDopamina,
+            dopamina,
+            passo
+        );
+
+        visualSanidade = Mathf.MoveTowards(
+            visualSanidade,
+            sanidade,
+            passo
+        );
+
+        visualControle = Mathf.MoveTowards(
+            visualControle,
+            controle,
+            passo
+        );
+
+        visualFissura = Mathf.MoveTowards(
+            visualFissura,
+            fissura,
+            passo
+        );
+
+        visualPercepcao = Mathf.MoveTowards(
+            visualPercepcao,
+            percepcao,
+            passo
+        );
+
+        visualAtencao = Mathf.MoveTowards(
+            visualAtencao,
+            atencao,
+            passo
+        );
+
+        if (sliderDopamina != null)
+            sliderDopamina.value = visualDopamina / 100f;
+
+        if (sliderSanidade != null)
+            sliderSanidade.value = visualSanidade / 100f;
+
+        if (sliderControle != null)
+            sliderControle.value = visualControle / 100f;
+
+        if (sliderFissura != null)
+            sliderFissura.value = visualFissura / 100f;
+
+        if (sliderPercepcao != null)
+            sliderPercepcao.value = visualPercepcao / 100f;
+
+        if (sliderAtencao != null)
+            sliderAtencao.value = visualAtencao / 100f;
+    }
+
+    void AtualizarBarrasImediatamente()
+    {
+        if (sliderDopamina != null)
+            sliderDopamina.value = visualDopamina / 100f;
+
+        if (sliderSanidade != null)
+            sliderSanidade.value = visualSanidade / 100f;
+
+        if (sliderControle != null)
+            sliderControle.value = visualControle / 100f;
+
+        if (sliderFissura != null)
+            sliderFissura.value = visualFissura / 100f;
+
+        if (sliderPercepcao != null)
+            sliderPercepcao.value = visualPercepcao / 100f;
+
+        if (sliderAtencao != null)
+            sliderAtencao.value = visualAtencao / 100f;
+    }
+
+    // =====================================================
+    // GIRAR
+    // =====================================================
+
     public void ClicarGirar()
     {
-        // Impede vários giros ao mesmo tempo
         if (girando)
             return;
 
-        // Lê o valor digitado
         if (inputValorAposta != null &&
             float.TryParse(inputValorAposta.text, out float valorDigitado))
         {
@@ -76,9 +190,8 @@ public class GameManager : MonoBehaviour
         {
             saldo -= valorAposta;
 
-            AtualizarInterface();
+            AtualizarSaldo();
 
-            // Sorteio da simulação
             // 10% vitória
             // 30% quase
             // 60% perda
@@ -112,7 +225,7 @@ public class GameManager : MonoBehaviour
     }
 
     // =====================================================
-    // PREPARAR VITÓRIA
+    // VITÓRIA
     // =====================================================
 
     void PrepararVitoria()
@@ -120,7 +233,8 @@ public class GameManager : MonoBehaviour
         if (!RolinhosConfigurados())
             return;
 
-        int escolhido = Random.Range(0, simbolos.Length);
+        int escolhido =
+            Random.Range(0, simbolos.Length);
 
         Sprite resultado1 = simbolos[escolhido];
         Sprite resultado2 = simbolos[escolhido];
@@ -137,7 +251,7 @@ public class GameManager : MonoBehaviour
     }
 
     // =====================================================
-    // PREPARAR QUASE
+    // QUASE
     // =====================================================
 
     void PrepararQuase()
@@ -186,7 +300,7 @@ public class GameManager : MonoBehaviour
     }
 
     // =====================================================
-    // PREPARAR PERDA
+    // PERDA
     // =====================================================
 
     void PrepararPerda()
@@ -239,8 +353,6 @@ public class GameManager : MonoBehaviour
     // slot3 = ESQUERDA
     // slot2 = MEIO
     // slot1 = DIREITA
-    //
-    // TODOS usam a mesma velocidade
     // =====================================================
 
     IEnumerator AnimarRolinhos(
@@ -261,14 +373,10 @@ public class GameManager : MonoBehaviour
             textoMensagem.text = "Girando...";
         }
 
-        // MESMA velocidade para todos
+        // Mesma velocidade para todos
         float velocidade = 0.06f;
 
-        // =================================================
-        // 1. ESQUERDA COMEÇA
-        // slot3
-        // =================================================
-
+        // ESQUERDA COMEÇA
         for (int i = 0; i < 5; i++)
         {
             slot3.sprite =
@@ -279,11 +387,7 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(velocidade);
         }
 
-        // =================================================
-        // 2. MEIO COMEÇA
-        // esquerda + meio girando
-        // =================================================
-
+        // MEIO COMEÇA
         for (int i = 0; i < 5; i++)
         {
             slot3.sprite =
@@ -299,11 +403,7 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(velocidade);
         }
 
-        // =================================================
-        // 3. DIREITA COMEÇA
-        // os três giram juntos
-        // =================================================
-
+        // DIREITA COMEÇA
         for (int i = 0; i < 7; i++)
         {
             slot3.sprite =
@@ -324,13 +424,10 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(velocidade);
         }
 
-        // =================================================
-        // 4. ESQUERDA PARA
-        // =================================================
-
+        // ESQUERDA PARA
         slot3.sprite = resultado3;
 
-        // Meio e direita continuam na MESMA velocidade
+        // Meio e direita continuam
         for (int i = 0; i < 5; i++)
         {
             slot2.sprite =
@@ -346,13 +443,10 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(velocidade);
         }
 
-        // =================================================
-        // 5. MEIO PARA
-        // =================================================
-
+        // MEIO PARA
         slot2.sprite = resultado2;
 
-        // Direita continua na MESMA velocidade
+        // Direita continua
         for (int i = 0; i < 5; i++)
         {
             slot1.sprite =
@@ -363,10 +457,7 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(velocidade);
         }
 
-        // =================================================
-        // 6. DIREITA PARA
-        // =================================================
-
+        // DIREITA PARA
         slot1.sprite = resultado1;
 
         yield return new WaitForSeconds(0.25f);
@@ -382,14 +473,14 @@ public class GameManager : MonoBehaviour
     }
 
     // =====================================================
-    // APLICAR RESULTADO
+    // RESULTADO
     // =====================================================
 
     void AplicarResultado(int tipoResultado)
     {
-        // GANHOU
         if (tipoResultado == 0)
         {
+            // GANHOU
             saldo += valorAposta * 2;
 
             if (textoMensagem != null)
@@ -404,10 +495,9 @@ public class GameManager : MonoBehaviour
             fissura += 10;
             percepcao -= 3 * 1.5f;
         }
-
-        // QUASE GANHOU
         else if (tipoResultado == 1)
         {
+            // QUASE
             if (textoMensagem != null)
             {
                 textoMensagem.text =
@@ -420,10 +510,9 @@ public class GameManager : MonoBehaviour
             fissura += 25;
             percepcao -= 8 * 1.5f;
         }
-
-        // PERDEU
         else
         {
+            // PERDEU
             if (textoMensagem != null)
             {
                 textoMensagem.text =
@@ -438,23 +527,21 @@ public class GameManager : MonoBehaviour
         }
 
         LimitarValores();
-        AtualizarInterface();
+
+        // O saldo muda imediatamente,
+        // mas as barras vão caminhar lentamente
+        AtualizarSaldo();
 
         if (saldo <= 0)
         {
             saldo = 0;
-
-            AtualizarInterface();
+            AtualizarSaldo();
 
             StartCoroutine(
                 FinalizarComEspera()
             );
         }
     }
-
-    // =====================================================
-    // ESPERA ANTES DA TELA FINAL
-    // =====================================================
 
     IEnumerator FinalizarComEspera()
     {
@@ -464,7 +551,7 @@ public class GameManager : MonoBehaviour
     }
 
     // =====================================================
-    // VERIFICAR ROLINHOS
+    // VERIFICAÇÃO DOS ROLINHOS
     // =====================================================
 
     bool RolinhosConfigurados()
@@ -527,11 +614,13 @@ public class GameManager : MonoBehaviour
         }
 
         LimitarValores();
-        AtualizarInterface();
+
+        // Não atualizamos os sliders diretamente.
+        // O Update() fará a animação.
     }
 
     // =====================================================
-    // AUMENTAR APOSTA
+    // AUMENTAR / DIMINUIR
     // =====================================================
 
     public void AumentarAposta()
@@ -547,10 +636,6 @@ public class GameManager : MonoBehaviour
                 valorAposta.ToString();
         }
     }
-
-    // =====================================================
-    // DIMINUIR APOSTA
-    // =====================================================
 
     public void DiminuirAposta()
     {
@@ -581,7 +666,7 @@ public class GameManager : MonoBehaviour
     }
 
     // =====================================================
-    // LIMITAR MEDIDORES
+    // LIMITAR VALORES
     // =====================================================
 
     void LimitarValores()
@@ -606,48 +691,12 @@ public class GameManager : MonoBehaviour
     }
 
     // =====================================================
-    // ATUALIZAR INTERFACE
+    // SALDO
     // =====================================================
 
-    void AtualizarInterface()
+    void AtualizarSaldo()
     {
-        if (sliderDopamina)
-        {
-            sliderDopamina.value =
-                dopamina / 100f;
-        }
-
-        if (sliderSanidade)
-        {
-            sliderSanidade.value =
-                sanidade / 100f;
-        }
-
-        if (sliderControle)
-        {
-            sliderControle.value =
-                controle / 100f;
-        }
-
-        if (sliderFissura)
-        {
-            sliderFissura.value =
-                fissura / 100f;
-        }
-
-        if (sliderPercepcao)
-        {
-            sliderPercepcao.value =
-                percepcao / 100f;
-        }
-
-        if (sliderAtencao)
-        {
-            sliderAtencao.value =
-                atencao / 100f;
-        }
-
-        if (textoSaldo)
+        if (textoSaldo != null)
         {
             textoSaldo.text =
                 "SALDO: R$ " +
@@ -656,7 +705,7 @@ public class GameManager : MonoBehaviour
     }
 
     // =====================================================
-    // FINALIZAR SIMULAÇÃO
+    // FINALIZAR
     // =====================================================
 
     public void FinalizarSimulacao()
