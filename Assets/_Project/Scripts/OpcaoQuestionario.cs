@@ -17,13 +17,28 @@ public class OpcaoQuestionario : MonoBehaviour
     public Color branco = Color.white;
     public Color lilas = new Color32(160, 165, 192, 255);
 
+    public void AtualizarTexto(string texto)
+    {
+        if (textoPrincipal != null)
+            textoPrincipal.text = texto;
+
+        // Se houver subtítulo ou legenda opcional, você pode tratar aqui se necessário
+        if (textoSubtitulo != null)
+            textoSubtitulo.gameObject.SetActive(false); // Oculta subtítulo se a pergunta usar texto simples
+    }
+
     public void DefinirSelecionada(bool selecionada)
     {
-        fundo.color = selecionada ? corSelecionada : corNormal;
+        if (fundo != null)
+            fundo.color = selecionada ? corSelecionada : corNormal;
 
-        indicadorAtivo.SetActive(selecionada);
+        if (indicadorAtivo != null)
+            indicadorAtivo.SetActive(selecionada);
 
-        textoPrincipal.color = selecionada ? rosa : branco;
-        textoSubtitulo.color = lilas;
+        if (textoPrincipal != null)
+            textoPrincipal.color = selecionada ? rosa : branco;
+        
+        if (textoSubtitulo != null)
+            textoSubtitulo.color = lilas;
     }
 }

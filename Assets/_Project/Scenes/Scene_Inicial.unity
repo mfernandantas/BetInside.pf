@@ -553,7 +553,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &144814417
 RectTransform:
   m_ObjectHideFlags: 0
@@ -661,9 +661,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1676005760}
-        m_TargetAssemblyTypeName: TelaInicial, Assembly-CSharp
-        m_MethodName: IniciarSimulacao
+      - m_Target: {fileID: 1217338173}
+        m_TargetAssemblyTypeName: OnboardingManager, Assembly-CSharp
+        m_MethodName: AvancarParaQuestionario
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -726,7 +726,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &308051021
 RectTransform:
   m_ObjectHideFlags: 0
@@ -788,10 +788,10 @@ RectTransform:
   - {fileID: 1378895292}
   m_Father: {fileID: 34433794}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 320, y: -194}
+  m_SizeDelta: {x: 640, y: 68}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &317016162
 MonoBehaviour:
@@ -2293,10 +2293,10 @@ RectTransform:
   - {fileID: 487358504}
   m_Father: {fileID: 34433794}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 320, y: -114}
+  m_SizeDelta: {x: 640, y: 68}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1046014683
 MonoBehaviour:
@@ -3088,8 +3088,57 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5be26fbe8e7816242963976f52130266, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OnboardingManager
+  panelCapa: {fileID: 144814416}
   cardOQueSaoBets: {fileID: 1284467460}
-  painelQuestionario: {fileID: 0}
+  painelQuestionario: {fileID: 308051020}
+  textoPasso: {fileID: 676068171}
+  textoPorcentagem: {fileID: 1853997698}
+  progressBarFill: {fileID: 1996960204}
+  textoPergunta: {fileID: 1714054202}
+  opcoesUI:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  botaoVoltar: {fileID: 2083963897}
+  botaoProxima: {fileID: 776985352}
+  textoBotaoProxima: {fileID: 1191129074}
+  imagemBotaoProxima: {fileID: 776985353}
+  corBotaoAtivo: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
+  corBotaoInativo: {r: 0.1254902, g: 0.13333334, b: 0.1882353, a: 1}
+  perguntas:
+  - tituloPergunta: "QUAL A SUA FAIXA ET\xC1RIA?"
+    opcoesTexto:
+    - 12 a 17 anos
+    - 18 a 24 anos
+    - 25 a 39 anos
+    - 40+ anos
+  - tituloPergunta: "QUAL O SEU V\xCDNCULO COM O AMBIENTE ACAD\xCAMICO/EDUCACIONAL?"
+    opcoesTexto:
+    - Estudante
+    - Professor / Educador
+    - "Pesquisador / Acad\xEAmico"
+    - Comunidade Externa / Outro
+  - tituloPergunta: QUAL SEU GRAU DE CONTATO COM PLATAFORMAS DE APOSTAS (BETS)?
+    opcoesTexto:
+    - "Nenhum contato pr\xE9vio"
+    - "Apenas consumo de propagandas/m\xEDdia"
+    - "J\xE1 apostei eventualmente"
+    - "Aposto/Apostava com frequ\xEAncia"
+  - tituloPergunta: "QUAL A SUA PRINCIPAL MOTIVA\xC7\xC3O AO TESTAR O BETINSIDE?"
+    opcoesTexto:
+    - "Aprender sobre os riscos do v\xEDcio (Fins educativos)"
+    - Analisar a ferramenta como objeto de estudo
+    - "Entender a matem\xE1tica/probabilidade"
+    - Curiosidade pessoal
+  - tituloPergunta: "VOC\xCA CONSIDERA QUE SIMULADORES INTERATIVOS AUXILIAM NA PREVEN\xC7\xC3O
+      DO V\xCDCIO?"
+    opcoesTexto:
+    - "Sim, s\xE3o mais eficazes que teoria"
+    - "Sim, com acompanhamento pedag\xF3gico"
+    - "Tenho d\xFAvidas"
+    - "N\xE3o causam impacto"
 --- !u!4 &1217338174
 Transform:
   m_ObjectHideFlags: 0
@@ -3783,10 +3832,10 @@ RectTransform:
   - {fileID: 382207212}
   m_Father: {fileID: 34433794}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 320, y: -34}
+  m_SizeDelta: {x: 640, y: 68}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1412747826
 MonoBehaviour:
@@ -4407,10 +4456,10 @@ RectTransform:
   - {fileID: 323917747}
   m_Father: {fileID: 34433794}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 320, y: -274}
+  m_SizeDelta: {x: 640, y: 68}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1709259027
 MonoBehaviour:
