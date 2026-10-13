@@ -877,7 +877,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 317016165}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1217338173}
+        m_TargetAssemblyTypeName: OnboardingManager, Assembly-CSharp
+        m_MethodName: SelecionarOpcao
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &317016165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1712,6 +1724,7 @@ RectTransform:
   - {fileID: 1217338174}
   - {fileID: 308051021}
   - {fileID: 144814417}
+  - {fileID: 1284467463}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1801,7 +1814,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 776985353}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1217338173}
+        m_TargetAssemblyTypeName: OnboardingManager, Assembly-CSharp
+        m_MethodName: BotaoProximaClicado
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &776985353
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2382,7 +2407,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1046014686}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1217338173}
+        m_TargetAssemblyTypeName: OnboardingManager, Assembly-CSharp
+        m_MethodName: SelecionarOpcao
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1046014686
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3096,11 +3133,10 @@ MonoBehaviour:
   progressBarFill: {fileID: 1996960204}
   textoPergunta: {fileID: 1714054202}
   opcoesUI:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1412747826}
+  - {fileID: 1046014683}
+  - {fileID: 317016162}
+  - {fileID: 1709259027}
   botaoVoltar: {fileID: 2083963897}
   botaoProxima: {fileID: 776985352}
   textoBotaoProxima: {fileID: 1191129074}
@@ -3151,8 +3187,7 @@ Transform:
   m_LocalPosition: {x: -117.72927, y: -64.30078, z: 0}
   m_LocalScale: {x: 2.3598123, y: 2.3598123, z: 2.3598123}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1284467463}
+  m_Children: []
   m_Father: {fileID: 716431302}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1260456715
@@ -3353,7 +3388,7 @@ RectTransform:
   m_GameObject: {fileID: 1284467460}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.42476344, y: 0.42476344, z: 0.42476344}
+  m_LocalScale: {x: 1.002362, y: 1.002362, z: 1.002362}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1160643572}
@@ -3361,11 +3396,11 @@ RectTransform:
   - {fileID: 2068295593}
   - {fileID: 1260456716}
   - {fileID: 454824126}
-  m_Father: {fileID: 1217338174}
+  m_Father: {fileID: 716431302}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 50, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1019.9, y: 769.645}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1286028431
@@ -3921,7 +3956,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1412747829}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1217338173}
+        m_TargetAssemblyTypeName: OnboardingManager, Assembly-CSharp
+        m_MethodName: SelecionarOpcao
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1412747829
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4545,7 +4592,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1709259030}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1217338173}
+        m_TargetAssemblyTypeName: OnboardingManager, Assembly-CSharp
+        m_MethodName: SelecionarOpcao
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 3
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1709259030
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5658,7 +5717,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2083963898}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1217338173}
+        m_TargetAssemblyTypeName: OnboardingManager, Assembly-CSharp
+        m_MethodName: BotaoVoltarClicado
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2083963898
 MonoBehaviour:
   m_ObjectHideFlags: 0
