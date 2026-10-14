@@ -1036,7 +1036,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -933.0001, y: 399}
+  m_AnchoredPosition: {x: -933.0001, y: 385}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &355684424
@@ -1059,7 +1059,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'BetInside
+  m_text: '<color=#00F5D4>Bet</color><color=#FF0072>Inside</color>
+
 
 '
   m_isRightToLeft: 0
@@ -1088,8 +1089,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 46.9
-  m_fontSizeBase: 46.9
+  m_fontSize: 55.8
+  m_fontSizeBase: 55.8
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1596,7 +1597,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
+  m_Color: {r: 1, g: 0, b: 0.44705883, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4353,7 +4354,13 @@ MonoBehaviour:
   sliderFissura: {fileID: 1218769882}
   sliderPercepcao: {fileID: 674608848}
   sliderAtencao: {fileID: 1194018428}
-  velocidadeBarras: 0.3
+  textoDopamina: {fileID: 1894144829}
+  textoSanidade: {fileID: 1932843771}
+  textoControle: {fileID: 1132639595}
+  textoFissura: {fileID: 1237402249}
+  textoPercepcao: {fileID: 933662460}
+  textoAtencao: {fileID: 1741355411}
+  velocidadeBarras: 0.5
   textoSaldo: {fileID: 1220363162}
   textoMensagem: {fileID: 1539576011}
   inputValorAposta: {fileID: 334053541}
@@ -4366,7 +4373,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 8c1e2d173ad7ffc4a903402d63f0ae75, type: 3}
   - {fileID: 21300000, guid: 8e9b55d690b76f9428141744db724c95, type: 3}
   - {fileID: 21300000, guid: fedbe0db22adf88449396ab9e89583aa, type: 3}
-  botaoGirar: {fileID: 0}
+  botaoGirar: {fileID: 910114546}
 --- !u!1 &1539576009
 GameObject:
   m_ObjectHideFlags: 0

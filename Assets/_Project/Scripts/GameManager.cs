@@ -14,6 +14,19 @@ public class GameManager : MonoBehaviour
     public Slider sliderPercepcao;
     public Slider sliderAtencao;
 
+    [Header("Textos dos Medidores (Números)")]
+    public TMP_Text textoDopamina;
+    public TMP_Text textoSanidade;
+    public TMP_Text textoControle;
+    public TMP_Text textoFissura;
+    public TMP_Text textoPercepcao;
+    public TMP_Text textoAtencao;
+
+    [Header("Cores dos Estados")]
+    private Color corVerde = new Color(0f, 0.96f, 0.83f);   // Ciano Neon (#00F5D4)
+    private Color corAmarela = new Color(1f, 0.82f, 0.4f);  // Amarelo Alerta (#FFD166)
+    private Color corVermelha = new Color(1f, 0.18f, 0.33f); // Vermelho Perigo (#FF2D55)
+
     [Header("Animacao das Barras")]
     [SerializeField] private float velocidadeBarras = 0.30f;
 
@@ -38,16 +51,15 @@ public class GameManager : MonoBehaviour
     private float valorAposta = 10f;
     private bool girando = false;
 
-    // Valores dos medidores
-    private float dopamina = 50f;
-    private float sanidade = 70f;
-    private float controle = 50f;
-    private float fissura = 30f;
-    private float percepcao = 80f;
-    private float atencao = 100f;
+    // Valores iniciais equilibrados (abaixo de 45 para começarem verde)
+    private float dopamina = 30f;
+    private float sanidade = 30f;
+    private float controle = 30f;
+    private float fissura = 20f;
+    private float percepcao = 30f;
+    private float atencao = 30f;
 
     // Valores visuais das barras
-    // Eles se aproximam lentamente dos valores reais
     private float visualDopamina;
     private float visualSanidade;
     private float visualControle;
@@ -62,8 +74,6 @@ public class GameManager : MonoBehaviour
             inputValorAposta.text = valorAposta.ToString();
         }
 
-        // Começa com os valores corretos,
-        // sem animação ao abrir a cena
         visualDopamina = dopamina;
         visualSanidade = sanidade;
         visualControle = controle;
@@ -76,8 +86,7 @@ public class GameManager : MonoBehaviour
 
         if (textoMensagem != null)
         {
-            textoMensagem.text =
-                "BASTIDORES DA BET: O algoritmo está pronto. Defina sua aposta e clique em GIRAR.";
+            textoMensagem.text = "BASTIDORES DA BET: O algoritmo está pronto. Defina sua aposta e clique em GIRAR.";
         }
     }
 
@@ -87,88 +96,67 @@ public class GameManager : MonoBehaviour
     }
 
     // =====================================================
-    // ANIMAÇÃO SUAVE DAS BARRAS
+    // ANIMAÇÃO E CORES DINÂMICAS DAS BARRAS
     // =====================================================
 
     void AnimarBarras()
     {
-        // Converte a velocidade para a escala 0-100
         float passo = velocidadeBarras * 100f * Time.deltaTime;
 
-        visualDopamina = Mathf.MoveTowards(
-            visualDopamina,
-            dopamina,
-            passo
-        );
+        visualDopamina = Mathf.MoveTowards(visualDopamina, dopamina, passo);
+        visualSanidade = Mathf.MoveTowards(visualSanidade, sanidade, passo);
+        visualControle = Mathf.MoveTowards(visualControle, controle, passo);
+        visualFissura = Mathf.MoveTowards(visualFissura, fissura, passo);
+        visualPercepcao = Mathf.MoveTowards(visualPercepcao, percepcao, passo);
+        visualAtencao = Mathf.MoveTowards(visualAtencao, atencao, passo);
 
-        visualSanidade = Mathf.MoveTowards(
-            visualSanidade,
-            sanidade,
-            passo
-        );
+        AtualizarSliderComCor(sliderDopamina, textoDopamina, visualDopamina);
+        AtualizarSliderComCor(sliderSanidade, textoSanidade, visualSanidade);
+        AtualizarSliderComCor(sliderControle, textoControle, visualControle);
+        AtualizarSliderComCor(sliderFissura, textoFissura, visualFissura);
+        AtualizarSliderComCor(sliderPercepcao, textoPercepcao, visualPercepcao);
+        AtualizarSliderComCor(sliderAtencao, textoAtencao, visualAtencao);
+    }
 
-        visualControle = Mathf.MoveTowards(
-            visualControle,
-            controle,
-            passo
-        );
+    void AtualizarSliderComCor(Slider slider, TMP_Text texto, float valor)
+    {
+        if (slider != null)
+            slider.value = valor / 100f;
 
-        visualFissura = Mathf.MoveTowards(
-            visualFissura,
-            fissura,
-            passo
-        );
+        if (texto != null)
+        {
+            texto.text = Mathf.RoundToInt(valor).ToString();
 
-        visualPercepcao = Mathf.MoveTowards(
-            visualPercepcao,
-            percepcao,
-            passo
-        );
-
-        visualAtencao = Mathf.MoveTowards(
-            visualAtencao,
-            atencao,
-            passo
-        );
-
-        if (sliderDopamina != null)
-            sliderDopamina.value = visualDopamina / 100f;
-
-        if (sliderSanidade != null)
-            sliderSanidade.value = visualSanidade / 100f;
-
-        if (sliderControle != null)
-            sliderControle.value = visualControle / 100f;
-
-        if (sliderFissura != null)
-            sliderFissura.value = visualFissura / 100f;
-
-        if (sliderPercepcao != null)
-            sliderPercepcao.value = visualPercepcao / 100f;
-
-        if (sliderAtencao != null)
-            sliderAtencao.value = visualAtencao / 100f;
+            // Regra de cores: Vermelho se >= 70 (perigo), Amarelo se >= 45 (alerta), Verde caso contrário
+            if (valor >= 70f)
+            {
+                texto.color = corVermelha;
+                if (slider != null && slider.fillRect != null)
+                    slider.fillRect.GetComponent<Image>().color = corVermelha;
+            }
+            else if (valor >= 45f)
+            {
+                texto.color = corAmarela;
+                if (slider != null && slider.fillRect != null)
+                    slider.fillRect.GetComponent<Image>().color = corAmarela;
+            }
+            else
+            {
+                texto.color = corVerde;
+                if (slider != null && slider.fillRect != null)
+                    slider.fillRect.GetComponent<Image>().color = corVerde;
+            }
+        }
     }
 
     void AtualizarBarrasImediatamente()
     {
-        if (sliderDopamina != null)
-            sliderDopamina.value = visualDopamina / 100f;
-
-        if (sliderSanidade != null)
-            sliderSanidade.value = visualSanidade / 100f;
-
-        if (sliderControle != null)
-            sliderControle.value = visualControle / 100f;
-
-        if (sliderFissura != null)
-            sliderFissura.value = visualFissura / 100f;
-
-        if (sliderPercepcao != null)
-            sliderPercepcao.value = visualPercepcao / 100f;
-
-        if (sliderAtencao != null)
-            sliderAtencao.value = visualAtencao / 100f;
+        AtualizarSliderComCor(sliderDopamina, textoDopamina, visualDopamina);
+        AtualizarSliderComCor(sliderSanidade, textoSanidade, visualSanidade);
+        AtualizarSliderComCor(sliderControle, textoControle, visualControle);
+        AtualizarSliderComCor(sliderFissura, textoFissura, visualFissura);
+        AtualizarSliderComCor(sliderPercepcao, textoPercepcao, visualPercepcao);
+        AtualizarSliderComCor(sliderAtencao, textoAtencao, visualAtencao);
     }
 
     // =====================================================
@@ -180,8 +168,7 @@ public class GameManager : MonoBehaviour
         if (girando)
             return;
 
-        if (inputValorAposta != null &&
-            float.TryParse(inputValorAposta.text, out float valorDigitado))
+        if (inputValorAposta != null && float.TryParse(inputValorAposta.text, out float valorDigitado))
         {
             valorAposta = valorDigitado;
         }
@@ -189,12 +176,8 @@ public class GameManager : MonoBehaviour
         if (saldo >= valorAposta && valorAposta > 0)
         {
             saldo -= valorAposta;
-
             AtualizarSaldo();
 
-            // 10% vitória
-            // 30% quase
-            // 60% perda
             int sorteio = Random.Range(0, 100);
 
             if (sorteio < 10)
@@ -218,246 +201,99 @@ public class GameManager : MonoBehaviour
             }
             else if (textoMensagem != null)
             {
-                textoMensagem.text =
-                    "Saldo insuficiente ou valor inválido.";
+                textoMensagem.text = "Saldo insuficiente ou valor inválido.";
             }
         }
     }
 
     // =====================================================
-    // VITÓRIA
+    // VITÓRIA / QUASE / PERDA
     // =====================================================
 
     void PrepararVitoria()
     {
-        if (!RolinhosConfigurados())
-            return;
+        if (!RolinhosConfigurados()) return;
 
-        int escolhido =
-            Random.Range(0, simbolos.Length);
-
-        Sprite resultado1 = simbolos[escolhido];
-        Sprite resultado2 = simbolos[escolhido];
-        Sprite resultado3 = simbolos[escolhido];
-
-        StartCoroutine(
-            AnimarRolinhos(
-                resultado1,
-                resultado2,
-                resultado3,
-                0
-            )
-        );
+        int escolhido = Random.Range(0, simbolos.Length);
+        StartCoroutine(AnimarRolinhos(simbolos[escolhido], simbolos[escolhido], simbolos[escolhido], 0));
     }
-
-    // =====================================================
-    // QUASE
-    // =====================================================
 
     void PrepararQuase()
     {
-        if (!RolinhosConfigurados())
-            return;
+        if (!RolinhosConfigurados()) return;
 
-        int simboloIgual =
-            Random.Range(0, simbolos.Length);
-
+        int simboloIgual = Random.Range(0, simbolos.Length);
         int simboloDiferente;
+        do { simboloDiferente = Random.Range(0, simbolos.Length); } while (simboloDiferente == simboloIgual);
 
-        do
-        {
-            simboloDiferente =
-                Random.Range(0, simbolos.Length);
-        }
-        while (simboloDiferente == simboloIgual);
+        int posicaoDiferente = Random.Range(0, 3);
 
-        int posicaoDiferente =
-            Random.Range(0, 3);
+        Sprite r1 = (posicaoDiferente == 0) ? simbolos[simboloDiferente] : simbolos[simboloIgual];
+        Sprite r2 = (posicaoDiferente == 1) ? simbolos[simboloDiferente] : simbolos[simboloIgual];
+        Sprite r3 = (posicaoDiferente == 2) ? simbolos[simboloDiferente] : simbolos[simboloIgual];
 
-        Sprite resultado1 =
-            posicaoDiferente == 0
-            ? simbolos[simboloDiferente]
-            : simbolos[simboloIgual];
-
-        Sprite resultado2 =
-            posicaoDiferente == 1
-            ? simbolos[simboloDiferente]
-            : simbolos[simboloIgual];
-
-        Sprite resultado3 =
-            posicaoDiferente == 2
-            ? simbolos[simboloDiferente]
-            : simbolos[simboloIgual];
-
-        StartCoroutine(
-            AnimarRolinhos(
-                resultado1,
-                resultado2,
-                resultado3,
-                1
-            )
-        );
+        StartCoroutine(AnimarRolinhos(r1, r2, r3, 1));
     }
-
-    // =====================================================
-    // PERDA
-    // =====================================================
 
     void PrepararPerda()
     {
-        if (!RolinhosConfigurados())
-            return;
+        if (!RolinhosConfigurados()) return;
 
-        int primeiro =
-            Random.Range(0, simbolos.Length);
+        int p1 = Random.Range(0, simbolos.Length);
+        int p2, p3;
+        do { p2 = Random.Range(0, simbolos.Length); } while (p2 == p1);
+        do { p3 = Random.Range(0, simbolos.Length); } while (p3 == p1 || p3 == p2);
 
-        int segundo;
-
-        do
-        {
-            segundo =
-                Random.Range(0, simbolos.Length);
-        }
-        while (segundo == primeiro);
-
-        int terceiro;
-
-        do
-        {
-            terceiro =
-                Random.Range(0, simbolos.Length);
-        }
-        while (
-            terceiro == primeiro ||
-            terceiro == segundo
-        );
-
-        Sprite resultado1 = simbolos[primeiro];
-        Sprite resultado2 = simbolos[segundo];
-        Sprite resultado3 = simbolos[terceiro];
-
-        StartCoroutine(
-            AnimarRolinhos(
-                resultado1,
-                resultado2,
-                resultado3,
-                2
-            )
-        );
+        StartCoroutine(AnimarRolinhos(simbolos[p1], simbolos[p2], simbolos[p3], 2));
     }
 
-    // =====================================================
-    // ANIMAÇÃO DOS ROLINHOS
-    //
-    // NO SEU LAYOUT:
-    // slot3 = ESQUERDA
-    // slot2 = MEIO
-    // slot1 = DIREITA
-    // =====================================================
-
-    IEnumerator AnimarRolinhos(
-        Sprite resultado1,
-        Sprite resultado2,
-        Sprite resultado3,
-        int tipoResultado)
+    IEnumerator AnimarRolinhos(Sprite resultado1, Sprite resultado2, Sprite resultado3, int tipoResultado)
     {
         girando = true;
 
-        if (botaoGirar != null)
-        {
-            botaoGirar.interactable = false;
-        }
+        if (botaoGirar != null) botaoGirar.interactable = false;
+        if (textoMensagem != null) textoMensagem.text = "Girando...";
 
-        if (textoMensagem != null)
-        {
-            textoMensagem.text = "Girando...";
-        }
-
-        // Mesma velocidade para todos
         float velocidade = 0.06f;
 
-        // ESQUERDA COMEÇA
         for (int i = 0; i < 5; i++)
         {
-            slot3.sprite =
-                simbolos[
-                    Random.Range(0, simbolos.Length)
-                ];
-
+            slot3.sprite = simbolos[Random.Range(0, simbolos.Length)];
             yield return new WaitForSeconds(velocidade);
         }
 
-        // MEIO COMEÇA
         for (int i = 0; i < 5; i++)
         {
-            slot3.sprite =
-                simbolos[
-                    Random.Range(0, simbolos.Length)
-                ];
-
-            slot2.sprite =
-                simbolos[
-                    Random.Range(0, simbolos.Length)
-                ];
-
+            slot3.sprite = simbolos[Random.Range(0, simbolos.Length)];
+            slot2.sprite = simbolos[Random.Range(0, simbolos.Length)];
             yield return new WaitForSeconds(velocidade);
         }
 
-        // DIREITA COMEÇA
         for (int i = 0; i < 7; i++)
         {
-            slot3.sprite =
-                simbolos[
-                    Random.Range(0, simbolos.Length)
-                ];
-
-            slot2.sprite =
-                simbolos[
-                    Random.Range(0, simbolos.Length)
-                ];
-
-            slot1.sprite =
-                simbolos[
-                    Random.Range(0, simbolos.Length)
-                ];
-
+            slot3.sprite = simbolos[Random.Range(0, simbolos.Length)];
+            slot2.sprite = simbolos[Random.Range(0, simbolos.Length)];
+            slot1.sprite = simbolos[Random.Range(0, simbolos.Length)];
             yield return new WaitForSeconds(velocidade);
         }
 
-        // ESQUERDA PARA
         slot3.sprite = resultado3;
 
-        // Meio e direita continuam
         for (int i = 0; i < 5; i++)
         {
-            slot2.sprite =
-                simbolos[
-                    Random.Range(0, simbolos.Length)
-                ];
-
-            slot1.sprite =
-                simbolos[
-                    Random.Range(0, simbolos.Length)
-                ];
-
+            slot2.sprite = simbolos[Random.Range(0, simbolos.Length)];
+            slot1.sprite = simbolos[Random.Range(0, simbolos.Length)];
             yield return new WaitForSeconds(velocidade);
         }
 
-        // MEIO PARA
         slot2.sprite = resultado2;
 
-        // Direita continua
         for (int i = 0; i < 5; i++)
         {
-            slot1.sprite =
-                simbolos[
-                    Random.Range(0, simbolos.Length)
-                ];
-
+            slot1.sprite = simbolos[Random.Range(0, simbolos.Length)];
             yield return new WaitForSeconds(velocidade);
         }
 
-        // DIREITA PARA
         slot1.sprite = resultado1;
 
         yield return new WaitForSeconds(0.25f);
@@ -465,301 +301,146 @@ public class GameManager : MonoBehaviour
         AplicarResultado(tipoResultado);
 
         girando = false;
-
-        if (botaoGirar != null)
-        {
-            botaoGirar.interactable = true;
-        }
+        if (botaoGirar != null) botaoGirar.interactable = true;
     }
-
-    // =====================================================
-    // RESULTADO
-    // =====================================================
 
     void AplicarResultado(int tipoResultado)
     {
         if (tipoResultado == 0)
         {
-            // GANHOU
             saldo += valorAposta * 2;
-
-            if (textoMensagem != null)
-            {
-                textoMensagem.text =
-                    "Você GANHOU! Observe como uma vitória pode aumentar a vontade de continuar.";
-            }
+            if (textoMensagem != null) textoMensagem.text = "Você GANHOU! Observe como uma vitória pode aumentar a vontade de continuar.";
 
             dopamina += 30;
             sanidade += 5;
-            controle -= 2 * 1.5f;
+            controle -= 3f;
             fissura += 10;
-            percepcao -= 3 * 1.5f;
+            percepcao -= 4.5f;
         }
         else if (tipoResultado == 1)
         {
-            // QUASE
-            if (textoMensagem != null)
-            {
-                textoMensagem.text =
-                    "QUASE! Dois símbolos ficaram iguais. Esse tipo de resultado pode incentivar novas tentativas.";
-            }
+            if (textoMensagem != null) textoMensagem.text = "QUASE! Dois símbolos ficaram iguais. Esse tipo de resultado pode incentivar novas tentativas.";
 
             dopamina += 20;
-            sanidade -= 12 * 1.5f;
-            controle -= 5 * 1.5f;
+            sanidade -= 18f;
+            controle -= 7.5f;
             fissura += 25;
-            percepcao -= 8 * 1.5f;
+            percepcao -= 12f;
         }
         else
         {
-            // PERDEU
-            if (textoMensagem != null)
-            {
-                textoMensagem.text =
-                    "Você PERDEU. Observe como a frustração da perda pode estimular a tentativa de recuperar o valor.";
-            }
+            if (textoMensagem != null) textoMensagem.text = "Você PERDEU. Observe como a frustração da perda pode estimular a tentativa de recuperar o valor.";
 
             dopamina -= 15;
-            sanidade -= 5 * 1.5f;
+            sanidade -= 7.5f;
             controle += 3;
             fissura += 15;
-            percepcao -= 5 * 1.5f;
+            percepcao -= 7.5f;
         }
 
         LimitarValores();
-
-        // O saldo muda imediatamente,
-        // mas as barras vão caminhar lentamente
         AtualizarSaldo();
 
         if (saldo <= 0)
         {
             saldo = 0;
             AtualizarSaldo();
-
-            StartCoroutine(
-                FinalizarComEspera()
-            );
+            StartCoroutine(FinalizarComEspera());
         }
     }
 
     IEnumerator FinalizarComEspera()
     {
         yield return new WaitForSeconds(1.5f);
-
         FinalizarSimulacao();
     }
 
-    // =====================================================
-    // VERIFICAÇÃO DOS ROLINHOS
-    // =====================================================
-
     bool RolinhosConfigurados()
     {
-        if (
-            slot1 == null ||
-            slot2 == null ||
-            slot3 == null ||
-            simbolos == null ||
-            simbolos.Length < 3
-        )
+        if (slot1 == null || slot2 == null || slot3 == null || simbolos == null || simbolos.Length < 3)
         {
-            Debug.LogWarning(
-                "Configure os rolinhos e símbolos no GameManager."
-            );
-
+            Debug.LogWarning("Configure os rolinhos e símbolos no GameManager.");
             return false;
         }
-
         return true;
     }
 
-    // =====================================================
-    // DOBRAR
-    // =====================================================
-
     public void ClicarDobrar()
     {
-        if (girando)
-            return;
+        if (girando) return;
 
-        if (
-            inputValorAposta != null &&
-            float.TryParse(
-                inputValorAposta.text,
-                out float valorDigitado
-            )
-        )
+        if (inputValorAposta != null && float.TryParse(inputValorAposta.text, out float valorDigitado))
         {
             valorAposta = valorDigitado;
         }
 
         valorAposta *= 2;
-
-        if (inputValorAposta != null)
-        {
-            inputValorAposta.text =
-                valorAposta.ToString();
-        }
+        if (inputValorAposta != null) inputValorAposta.text = valorAposta.ToString();
 
         dopamina += 5;
-        controle -= 8 * 1.5f;
+        controle -= 12f;
         fissura += 20;
-        percepcao -= 10 * 1.5f;
+        percepcao -= 15f;
 
-        if (textoMensagem != null)
-        {
-            textoMensagem.text =
-                "Aposta dobrada. A tentativa de recuperar perdas aumentando o valor é um comportamento de risco.";
-        }
+        if (textoMensagem != null) textoMensagem.text = "Aposta dobrada. A tentativa de recuperar perdas aumentando o valor é um comportamento de risco.";
 
         LimitarValores();
-
-        // Não atualizamos os sliders diretamente.
-        // O Update() fará a animação.
     }
-
-    // =====================================================
-    // AUMENTAR / DIMINUIR
-    // =====================================================
 
     public void AumentarAposta()
     {
-        if (girando)
-            return;
-
+        if (girando) return;
         valorAposta += 5f;
-
-        if (inputValorAposta != null)
-        {
-            inputValorAposta.text =
-                valorAposta.ToString();
-        }
+        if (inputValorAposta != null) inputValorAposta.text = valorAposta.ToString();
     }
 
     public void DiminuirAposta()
     {
-        if (girando)
-            return;
-
+        if (girando) return;
         if (valorAposta > 5f)
         {
             valorAposta -= 5f;
-
-            if (inputValorAposta != null)
-            {
-                inputValorAposta.text =
-                    valorAposta.ToString();
-            }
+            if (inputValorAposta != null) inputValorAposta.text = valorAposta.ToString();
         }
     }
 
-    // =====================================================
-    // SAIR
-    // =====================================================
-
     public void ClicarSair()
     {
-        SceneManager.LoadScene(
-            "Scene_Inicial"
-        );
+        SceneManager.LoadScene("Scene_Inicial");
     }
-
-    // =====================================================
-    // LIMITAR VALORES
-    // =====================================================
 
     void LimitarValores()
     {
-        dopamina =
-            Mathf.Clamp(dopamina, 0f, 100f);
-
-        sanidade =
-            Mathf.Clamp(sanidade, 0f, 100f);
-
-        controle =
-            Mathf.Clamp(controle, 0f, 100f);
-
-        fissura =
-            Mathf.Clamp(fissura, 0f, 100f);
-
-        percepcao =
-            Mathf.Clamp(percepcao, 0f, 100f);
-
-        atencao =
-            Mathf.Clamp(atencao, 0f, 100f);
+        dopamina = Mathf.Clamp(dopamina, 0f, 100f);
+        sanidade = Mathf.Clamp(sanidade, 0f, 100f);
+        controle = Mathf.Clamp(controle, 0f, 100f);
+        fissura = Mathf.Clamp(fissura, 0f, 100f);
+        percepcao = Mathf.Clamp(percepcao, 0f, 100f);
+        atencao = Mathf.Clamp(atencao, 0f, 100f);
     }
-
-    // =====================================================
-    // SALDO
-    // =====================================================
 
     void AtualizarSaldo()
     {
         if (textoSaldo != null)
         {
-            textoSaldo.text =
-                "SALDO: R$ " +
-                saldo.ToString("F2");
+            textoSaldo.text = "SALDO: R$ " + saldo.ToString("F2");
         }
     }
 
-    // =====================================================
-    // FINALIZAR
-    // =====================================================
-
     public void FinalizarSimulacao()
     {
-        PlayerPrefs.SetFloat(
-            "SaldoFinal",
-            saldo
-        );
+        PlayerPrefs.SetFloat("SaldoFinal", saldo);
+        PlayerPrefs.SetFloat("DopaminaFinal", dopamina);
+        PlayerPrefs.SetFloat("SanidadeFinal", sanidade);
+        PlayerPrefs.SetFloat("ControleFinal", controle);
+        PlayerPrefs.SetFloat("FissuraFinal", fissura);
+        PlayerPrefs.SetFloat("PercepcaoFinal", percepcao);
+        PlayerPrefs.SetFloat("AtencaoFinal", atencao);
 
-        PlayerPrefs.SetFloat(
-            "DopaminaFinal",
-            dopamina
-        );
-
-        PlayerPrefs.SetFloat(
-            "SanidadeFinal",
-            sanidade
-        );
-
-        PlayerPrefs.SetFloat(
-            "ControleFinal",
-            controle
-        );
-
-        PlayerPrefs.SetFloat(
-            "FissuraFinal",
-            fissura
-        );
-
-        PlayerPrefs.SetFloat(
-            "PercepcaoFinal",
-            percepcao
-        );
-
-        PlayerPrefs.SetFloat(
-            "AtencaoFinal",
-            atencao
-        );
-
-        string perfilAtual =
-            PlayerPrefs.GetString(
-                "PerfilUsuario",
-                "Jovem"
-            );
-
-        PlayerPrefs.SetString(
-            "PerfilUsado",
-            perfilAtual
-        );
-
+        string perfilAtual = PlayerPrefs.GetString("PerfilUsuario", "Jovem");
+        PlayerPrefs.SetString("PerfilUsado", perfilAtual);
         PlayerPrefs.Save();
 
-        SceneManager.LoadScene(
-            "Scene_Final"
-        );
+        SceneManager.LoadScene("Scene_Final");
     }
 }
