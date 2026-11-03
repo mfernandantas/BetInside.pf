@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -14,7 +15,7 @@ public class GameManager : MonoBehaviour
     public Slider sliderPercepcao;
     public Slider sliderAtencao;
 
-    [Header("Textos dos Medidores (Números)")]
+    [Header("Textos dos Medidores (Numeros)")]
     public TMP_Text textoDopamina;
     public TMP_Text textoSanidade;
     public TMP_Text textoControle;
@@ -23,9 +24,9 @@ public class GameManager : MonoBehaviour
     public TMP_Text textoAtencao;
 
     [Header("Cores dos Estados")]
-    private Color corVerde = new Color(0f, 0.96f, 0.83f);   // Ciano Neon (#00F5D4)
-    private Color corAmarela = new Color(1f, 0.82f, 0.4f);  // Amarelo Alerta (#FFD166)
-    private Color corVermelha = new Color(1f, 0.18f, 0.33f); // Vermelho Perigo (#FF2D55)
+    private Color corVerde = new Color(0f, 0.96f, 0.83f);
+    private Color corAmarela = new Color(1f, 0.82f, 0.4f);
+    private Color corVermelha = new Color(1f, 0.18f, 0.33f);
 
     [Header("Animacao das Barras")]
     [SerializeField] private float velocidadeBarras = 0.30f;
@@ -34,6 +35,9 @@ public class GameManager : MonoBehaviour
     public TMP_Text textoSaldo;
     public TMP_Text textoMensagem;
     public TMP_InputField inputValorAposta;
+
+    [Header("Texto da Aposta Atual")]
+    public TMP_Text textoAposta;
 
     [Header("Rolinhos")]
     public Image slot1;
@@ -47,11 +51,11 @@ public class GameManager : MonoBehaviour
     public Button botaoGirar;
 
     // Controle do jogo
-    private float saldo = 100f;
+    private float saldo = 500f;
     private float valorAposta = 10f;
     private bool girando = false;
 
-    // Valores iniciais equilibrados (abaixo de 45 para começarem verde)
+    // Valores iniciais dos medidores
     private float dopamina = 30f;
     private float sanidade = 30f;
     private float controle = 30f;
@@ -69,11 +73,6 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        if (inputValorAposta != null)
-        {
-            inputValorAposta.text = valorAposta.ToString();
-        }
-
         visualDopamina = dopamina;
         visualSanidade = sanidade;
         visualControle = controle;
@@ -83,10 +82,12 @@ public class GameManager : MonoBehaviour
 
         AtualizarBarrasImediatamente();
         AtualizarSaldo();
+        AtualizarAposta();
 
         if (textoMensagem != null)
         {
-            textoMensagem.text = "BASTIDORES DA BET: O algoritmo está pronto. Defina sua aposta e clique em GIRAR.";
+            textoMensagem.text =
+                "BASTIDORES DA BET: Voce comeca com R$ 500,00 ficticios. Observe como cada giro afeta seus medidores cerebrais.";
         }
     }
 
@@ -95,9 +96,7 @@ public class GameManager : MonoBehaviour
         AnimarBarras();
     }
 
-    // =====================================================
-    // ANIMAÇÃO E CORES DINÂMICAS DAS BARRAS
-    // =====================================================
+    // ANIMACAO DAS BARRAS
 
     void AnimarBarras()
     {
@@ -127,22 +126,24 @@ public class GameManager : MonoBehaviour
         {
             texto.text = Mathf.RoundToInt(valor).ToString();
 
-            // Regra de cores: Vermelho se >= 70 (perigo), Amarelo se >= 45 (alerta), Verde caso contrário
             if (valor >= 70f)
             {
                 texto.color = corVermelha;
+
                 if (slider != null && slider.fillRect != null)
                     slider.fillRect.GetComponent<Image>().color = corVermelha;
             }
             else if (valor >= 45f)
             {
                 texto.color = corAmarela;
+
                 if (slider != null && slider.fillRect != null)
                     slider.fillRect.GetComponent<Image>().color = corAmarela;
             }
             else
             {
                 texto.color = corVerde;
+
                 if (slider != null && slider.fillRect != null)
                     slider.fillRect.GetComponent<Image>().color = corVerde;
             }
@@ -159,22 +160,18 @@ public class GameManager : MonoBehaviour
         AtualizarSliderComCor(sliderAtencao, textoAtencao, visualAtencao);
     }
 
-    // =====================================================
     // GIRAR
-    // =====================================================
 
     public void ClicarGirar()
     {
         if (girando)
             return;
 
-        if (inputValorAposta != null && float.TryParse(inputValorAposta.text, out float valorDigitado))
-        {
-            valorAposta = valorDigitado;
-        }
-
         if (saldo >= valorAposta && valorAposta > 0)
         {
+            if (!RolinhosConfigurados())
+                return;
+
             saldo -= valorAposta;
             AtualizarSaldo();
 
@@ -201,21 +198,25 @@ public class GameManager : MonoBehaviour
             }
             else if (textoMensagem != null)
             {
-                textoMensagem.text = "Saldo insuficiente ou valor inválido.";
+                textoMensagem.text = "Saldo insuficiente para essa aposta. Diminua o valor.";
             }
         }
     }
 
-    // =====================================================
-    // VITÓRIA / QUASE / PERDA
-    // =====================================================
+    // VITORIA, QUASE VITORIA E PERDA
 
     void PrepararVitoria()
     {
         if (!RolinhosConfigurados()) return;
 
         int escolhido = Random.Range(0, simbolos.Length);
-        StartCoroutine(AnimarRolinhos(simbolos[escolhido], simbolos[escolhido], simbolos[escolhido], 0));
+
+        StartCoroutine(AnimarRolinhos(
+            simbolos[escolhido],
+            simbolos[escolhido],
+            simbolos[escolhido],
+            0
+        ));
     }
 
     void PrepararQuase()
@@ -224,13 +225,26 @@ public class GameManager : MonoBehaviour
 
         int simboloIgual = Random.Range(0, simbolos.Length);
         int simboloDiferente;
-        do { simboloDiferente = Random.Range(0, simbolos.Length); } while (simboloDiferente == simboloIgual);
+
+        do
+        {
+            simboloDiferente = Random.Range(0, simbolos.Length);
+        }
+        while (simboloDiferente == simboloIgual);
 
         int posicaoDiferente = Random.Range(0, 3);
 
-        Sprite r1 = (posicaoDiferente == 0) ? simbolos[simboloDiferente] : simbolos[simboloIgual];
-        Sprite r2 = (posicaoDiferente == 1) ? simbolos[simboloDiferente] : simbolos[simboloIgual];
-        Sprite r3 = (posicaoDiferente == 2) ? simbolos[simboloDiferente] : simbolos[simboloIgual];
+        Sprite r1 = posicaoDiferente == 0
+            ? simbolos[simboloDiferente]
+            : simbolos[simboloIgual];
+
+        Sprite r2 = posicaoDiferente == 1
+            ? simbolos[simboloDiferente]
+            : simbolos[simboloIgual];
+
+        Sprite r3 = posicaoDiferente == 2
+            ? simbolos[simboloDiferente]
+            : simbolos[simboloIgual];
 
         StartCoroutine(AnimarRolinhos(r1, r2, r3, 1));
     }
@@ -241,18 +255,43 @@ public class GameManager : MonoBehaviour
 
         int p1 = Random.Range(0, simbolos.Length);
         int p2, p3;
-        do { p2 = Random.Range(0, simbolos.Length); } while (p2 == p1);
-        do { p3 = Random.Range(0, simbolos.Length); } while (p3 == p1 || p3 == p2);
 
-        StartCoroutine(AnimarRolinhos(simbolos[p1], simbolos[p2], simbolos[p3], 2));
+        do
+        {
+            p2 = Random.Range(0, simbolos.Length);
+        }
+        while (p2 == p1);
+
+        do
+        {
+            p3 = Random.Range(0, simbolos.Length);
+        }
+        while (p3 == p1 || p3 == p2);
+
+        StartCoroutine(AnimarRolinhos(
+            simbolos[p1],
+            simbolos[p2],
+            simbolos[p3],
+            2
+        ));
     }
 
-    IEnumerator AnimarRolinhos(Sprite resultado1, Sprite resultado2, Sprite resultado3, int tipoResultado)
+    // ANIMACAO DOS ROLINHOS
+
+    IEnumerator AnimarRolinhos(
+        Sprite resultado1,
+        Sprite resultado2,
+        Sprite resultado3,
+        int tipoResultado
+    )
     {
         girando = true;
 
-        if (botaoGirar != null) botaoGirar.interactable = false;
-        if (textoMensagem != null) textoMensagem.text = "Girando...";
+        if (botaoGirar != null)
+            botaoGirar.interactable = false;
+
+        if (textoMensagem != null)
+            textoMensagem.text = "Girando...";
 
         float velocidade = 0.06f;
 
@@ -301,15 +340,22 @@ public class GameManager : MonoBehaviour
         AplicarResultado(tipoResultado);
 
         girando = false;
-        if (botaoGirar != null) botaoGirar.interactable = true;
+
+        if (botaoGirar != null)
+            botaoGirar.interactable = true;
     }
+
+    // APLICAR RESULTADO
 
     void AplicarResultado(int tipoResultado)
     {
         if (tipoResultado == 0)
         {
             saldo += valorAposta * 2;
-            if (textoMensagem != null) textoMensagem.text = "Você GANHOU! Observe como uma vitória pode aumentar a vontade de continuar.";
+
+            if (textoMensagem != null)
+                textoMensagem.text =
+                    "Voce GANHOU! Observe como uma vitoria pode aumentar a vontade de continuar.";
 
             dopamina += 30;
             sanidade += 5;
@@ -319,7 +365,9 @@ public class GameManager : MonoBehaviour
         }
         else if (tipoResultado == 1)
         {
-            if (textoMensagem != null) textoMensagem.text = "QUASE! Dois símbolos ficaram iguais. Esse tipo de resultado pode incentivar novas tentativas.";
+            if (textoMensagem != null)
+                textoMensagem.text =
+                    "QUASE! Dois simbolos ficaram iguais. Esse tipo de resultado pode incentivar novas tentativas.";
 
             dopamina += 20;
             sanidade -= 18f;
@@ -329,7 +377,9 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            if (textoMensagem != null) textoMensagem.text = "Você PERDEU. Observe como a frustração da perda pode estimular a tentativa de recuperar o valor.";
+            if (textoMensagem != null)
+                textoMensagem.text =
+                    "Voce PERDEU. Observe como a frustracao da perda pode estimular a tentativa de recuperar o valor.";
 
             dopamina -= 15;
             sanidade -= 7.5f;
@@ -357,57 +407,115 @@ public class GameManager : MonoBehaviour
 
     bool RolinhosConfigurados()
     {
-        if (slot1 == null || slot2 == null || slot3 == null || simbolos == null || simbolos.Length < 3)
+        if (slot1 == null ||
+            slot2 == null ||
+            slot3 == null ||
+            simbolos == null ||
+            simbolos.Length < 3)
         {
-            Debug.LogWarning("Configure os rolinhos e símbolos no GameManager.");
+            Debug.LogWarning(
+                "Configure os rolinhos e simbolos no GameManager."
+            );
+
             return false;
         }
+
         return true;
     }
+
+    // DOBRAR APOSTA
 
     public void ClicarDobrar()
     {
         if (girando) return;
 
-        if (inputValorAposta != null && float.TryParse(inputValorAposta.text, out float valorDigitado))
+        float novoValor = valorAposta * 2f;
+
+        if (novoValor > saldo)
         {
-            valorAposta = valorDigitado;
+            if (textoMensagem != null)
+                textoMensagem.text =
+                    "Saldo insuficiente para dobrar a aposta.";
+
+            return;
         }
 
-        valorAposta *= 2;
-        if (inputValorAposta != null) inputValorAposta.text = valorAposta.ToString();
+        valorAposta = novoValor;
+        AtualizarAposta();
 
         dopamina += 5;
         controle -= 12f;
         fissura += 20;
         percepcao -= 15f;
 
-        if (textoMensagem != null) textoMensagem.text = "Aposta dobrada. A tentativa de recuperar perdas aumentando o valor é um comportamento de risco.";
+        if (textoMensagem != null)
+            textoMensagem.text =
+                "Aposta dobrada. Aumentar valores para recuperar perdas e um comportamento de risco.";
 
         LimitarValores();
     }
 
+    // AUMENTAR APOSTA
+
     public void AumentarAposta()
     {
         if (girando) return;
-        valorAposta += 5f;
-        if (inputValorAposta != null) inputValorAposta.text = valorAposta.ToString();
+
+        if (valorAposta + 5f <= saldo)
+        {
+            valorAposta += 5f;
+            AtualizarAposta();
+        }
+        else if (textoMensagem != null)
+        {
+            textoMensagem.text =
+                "Saldo insuficiente para aumentar a aposta.";
+        }
     }
+
+    // DIMINUIR APOSTA
 
     public void DiminuirAposta()
     {
         if (girando) return;
+
         if (valorAposta > 5f)
         {
             valorAposta -= 5f;
-            if (inputValorAposta != null) inputValorAposta.text = valorAposta.ToString();
+            AtualizarAposta();
         }
     }
+
+    // ATUALIZAR APOSTA NA TELA
+
+    void AtualizarAposta()
+    {
+        if (textoAposta != null)
+        {
+            textoAposta.text =
+                "APOSTA: R$ " + valorAposta.ToString("F2");
+        }
+    }
+
+    // ATUALIZAR SALDO
+
+    void AtualizarSaldo()
+    {
+        if (textoSaldo != null)
+        {
+            textoSaldo.text =
+                "SALDO: R$ " + saldo.ToString("F2");
+        }
+    }
+
+    // SAIR
 
     public void ClicarSair()
     {
         SceneManager.LoadScene("Scene_Inicial");
     }
+
+    // LIMITAR MEDIDORES
 
     void LimitarValores()
     {
@@ -419,13 +527,7 @@ public class GameManager : MonoBehaviour
         atencao = Mathf.Clamp(atencao, 0f, 100f);
     }
 
-    void AtualizarSaldo()
-    {
-        if (textoSaldo != null)
-        {
-            textoSaldo.text = "SALDO: R$ " + saldo.ToString("F2");
-        }
-    }
+    // FINALIZAR SIMULACAO
 
     public void FinalizarSimulacao()
     {
@@ -437,7 +539,9 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetFloat("PercepcaoFinal", percepcao);
         PlayerPrefs.SetFloat("AtencaoFinal", atencao);
 
-        string perfilAtual = PlayerPrefs.GetString("PerfilUsuario", "Jovem");
+        string perfilAtual =
+            PlayerPrefs.GetString("PerfilUsuario", "Jovem");
+
         PlayerPrefs.SetString("PerfilUsado", perfilAtual);
         PlayerPrefs.Save();
 
